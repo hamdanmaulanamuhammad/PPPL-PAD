@@ -35,13 +35,5 @@
             <artifactId>selenium-java</artifactId>
             <version>4.31.0</version>
         </dependency>
-
-        <!-- WebDriverManager untuk manajemen driver browser -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.7.0</version> <!-- Gunakan versi terbaru, cek di Maven Central jika perlu -->
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
