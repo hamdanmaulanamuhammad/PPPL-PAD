@@ -89,8 +89,16 @@ public class ReportPage {
     public boolean isSalesChartVisible() {
         try {
             WebElement chart = wait.until(ExpectedConditions.visibilityOfElementLocated(chartContainer));
-            return chart.isDisplayed() &&
-                    !wait.until(ExpectedConditions.visibilityOfElementLocated(chartErrorMessage)).isDisplayed();
+            boolean isChartDisplayed = chart.isDisplayed();
+            boolean isErrorMessageDisplayed = false;
+            try {
+                WebElement errorMessage = driver.findElement(chartErrorMessage);
+                isErrorMessageDisplayed = errorMessage.isDisplayed();
+            } catch (Exception e) {
+                // Error message not found, which is expected if chart is visible
+            }
+            System.out.println("Chart displayed: " + isChartDisplayed + ", Error message displayed: " + isErrorMessageDisplayed);
+            return isChartDisplayed && !isErrorMessageDisplayed;
         } catch (Exception e) {
             System.out.println("Gagal memeriksa grafik penjualan: " + e.getMessage());
             return false;

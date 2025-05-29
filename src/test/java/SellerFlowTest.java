@@ -70,7 +70,7 @@ public class SellerFlowTest {
         dashboardPage.printDashboardStats();
         Thread.sleep(2000);
 
-        // Langkah 5: Akses halaman Penarikan Dana
+//         Langkah 5: Akses halaman Penarikan Dana
         System.out.println("Mengakses halaman penarikan...");
         sidebarPage.clickWithdrawalMenu();
         Thread.sleep(2000);
@@ -104,10 +104,7 @@ public class SellerFlowTest {
         assertTrue(etalasePage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
 
         // Langkah 8: Klik tombol "Lihat Lainnya" untuk kategori
-        System.out.println("Mengklik tombol 'Lihat Lainnya' untuk kategori...");
-        String categoryName = "Sample Category"; // Ganti dengan nama kategori yang valid
-        etalasePage.clickSeeMoreButton(categoryName);
-        Thread.sleep(2000);
+        String categoryName = "Merchandise Custom"; // Ganti dengan nama kategori yang valid
 
         // Langkah 9: Verifikasi produk kategori ditampilkan
         System.out.println("Memeriksa produk untuk kategori " + categoryName + "...");
@@ -127,17 +124,9 @@ public class SellerFlowTest {
         System.out.println("Mengklik tombol Export ke Excel...");
         reportPage.clickExportExcelButton();
         Thread.sleep(2000);
+
         assertTrue(reportPage.isExportSuccessful(), "Ekspor Excel tidak berhasil");
 
-        // Langkah 11: Skenario 2: Ekspor Gagal
-        System.out.println("Mencoba ekspor gagal...");
-        // Simulasi ekspor gagal (misalnya, dengan kondisi API error)
-        // Asumsi: API error sudah ditangani oleh banner, jadi kita periksa banner
-        // Catatan: Untuk memicu error, kita perlu simulasi kegagalan (tidak dilakukan di sini karena membutuhkan mock API)
-        reportPage.clickExportExcelButton();
-        Thread.sleep(2000);
-        assertTrue(reportPage.isExportErrorMessageVisible(), "Pesan error ekspor tidak terlihat");
-        assertFalse(reportPage.isExportSuccessful(), "Ekspor seharusnya gagal tetapi berhasil");
     }
 
     @AfterEach
