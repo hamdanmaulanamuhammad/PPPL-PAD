@@ -34,4 +34,24 @@ public class SidebarPage {
     public void clickWithdrawalMenu() {
         driver.findElement(withdrawalMenu).click();
     }
+
+    public void clickEtalaseMenu() {
+        try {
+            WebElement etalaseMenu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'Etalase')]")));
+            etalaseMenu.click();
+        } catch (Exception e) {
+            System.out.println("Gagal mengklik menu Etalase: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void clickReportMenu() {
+        try {
+            WebElement reportMenu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'Laporan')]")));
+            reportMenu.click();
+        } catch (Exception e) {
+            System.out.println("Gagal mengklik menu Laporan: " + e.getMessage());
+            throw e;
+        }
+    }
 }

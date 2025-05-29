@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class SellerFlowTest {
     private WebDriver driver;
@@ -13,6 +14,8 @@ public class SellerFlowTest {
     private SidebarPage sidebarPage;
     private DashboardPage dashboardPage;
     private WithdrawalPage withdrawalPage;
+    private EtalasePage etalasePage;
+    private ReportPage reportPage;
 
     @BeforeEach
     public void setUp() throws InterruptedException {
@@ -23,6 +26,8 @@ public class SellerFlowTest {
         sidebarPage = new SidebarPage(driver);
         dashboardPage = new DashboardPage(driver);
         withdrawalPage = new WithdrawalPage(driver);
+        etalasePage = new EtalasePage(driver);
+        reportPage = new ReportPage(driver); // Inisialisasi ReportPage
         driver.get("http://localhost:5173/login");
     }
 
@@ -75,18 +80,64 @@ public class SellerFlowTest {
 
         // Langkah 6: Simulasi penarikan dana
         System.out.println("Memulai simulasi penarikan dana...");
-        withdrawalPage.clickWithdrawButton(); // Penundaan sudah ditambahkan di metode
+        withdrawalPage.clickWithdrawButton();
+        Thread.sleep(2000);
 
         // Tambah rekening baru
         System.out.println("Menambahkan rekening baru...");
-        withdrawalPage.addNewAccount("odit", "1234567890", "John Doe"); // Penundaan sudah ditambahkan di metode
+        withdrawalPage.addNewAccount("odit", "1234567890", "John Doe");
+        Thread.sleep(2000);
 
         // Ajukan penarikan
         System.out.println("Mengajukan penarikan dana...");
-        withdrawalPage.submitWithdrawal("odit - 1234567890", "1000000"); // Penundaan sudah ditambahkan di metode
+        withdrawalPage.submitWithdrawal("odit - 1234567890", "1000000");
+        Thread.sleep(2000);
 
         // Verifikasi (opsional, tergantung UI setelah pengajuan)
         System.out.println("Penarikan dana diajukan.");
+
+        // Langkah 7: Akses halaman Etalase
+        System.out.println("Mengakses halaman Etalase...");
+        sidebarPage.clickEtalaseMenu();
+        Thread.sleep(2000);
+        assertTrue(etalasePage.isEtalasePageVisible(), "Halaman Etalase tidak terlihat");
+        assertTrue(etalasePage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
+
+        // Langkah 8: Klik tombol "Lihat Lainnya" untuk kategori
+        System.out.println("Mengklik tombol 'Lihat Lainnya' untuk kategori...");
+        String categoryName = "Sample Category"; // Ganti dengan nama kategori yang valid
+        etalasePage.clickSeeMoreButton(categoryName);
+        Thread.sleep(2000);
+
+        // Langkah 9: Verifikasi produk kategori ditampilkan
+        System.out.println("Memeriksa produk untuk kategori " + categoryName + "...");
+        assertTrue(etalasePage.isCategoryProductsVisible(categoryName),
+                "Produk untuk kategori " + categoryName + " tidak terlihat");
+
+        // Langkah 10: Akses halaman Laporan (Skenario 1: Ekspor Berhasil)
+        System.out.println("Mengakses halaman Laporan...");
+        sidebarPage.clickReportMenu(); // Asumsi metode ini ada di SidebarPage
+        Thread.sleep(2000);
+        assertTrue(reportPage.isReportPageVisible(), "Halaman Laporan tidak terlihat");
+        assertTrue(reportPage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
+        assertTrue(reportPage.isReportCardsVisible(), "Kartu laporan tidak terlihat");
+        assertTrue(reportPage.isSalesChartVisible(), "Grafik penjualan tidak terlihat");
+
+        // Klik tombol Export ke Excel
+        System.out.println("Mengklik tombol Export ke Excel...");
+        reportPage.clickExportExcelButton();
+        Thread.sleep(2000);
+        assertTrue(reportPage.isExportSuccessful(), "Ekspor Excel tidak berhasil");
+
+        // Langkah 11: Skenario 2: Ekspor Gagal
+        System.out.println("Mencoba ekspor gagal...");
+        // Simulasi ekspor gagal (misalnya, dengan kondisi API error)
+        // Asumsi: API error sudah ditangani oleh banner, jadi kita periksa banner
+        // Catatan: Untuk memicu error, kita perlu simulasi kegagalan (tidak dilakukan di sini karena membutuhkan mock API)
+        reportPage.clickExportExcelButton();
+        Thread.sleep(2000);
+        assertTrue(reportPage.isExportErrorMessageVisible(), "Pesan error ekspor tidak terlihat");
+        assertFalse(reportPage.isExportSuccessful(), "Ekspor seharusnya gagal tetapi berhasil");
     }
 
     @AfterEach
