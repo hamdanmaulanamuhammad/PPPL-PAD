@@ -16,6 +16,8 @@ public class SellerFlowTest {
     private EtalasePage etalasePage;
     private ReportPage reportPage;
 
+
+
     @BeforeEach
     public void setUp() throws InterruptedException {
         driver = new ChromeDriver();
@@ -30,7 +32,7 @@ public class SellerFlowTest {
     }
 
     @Test
-    public void testSellerFlow() throws InterruptedException {
+    public void testSellerFlow() throws Exception {
         // Langkah 1: Verifikasi halaman login terlihat
         System.out.println("Memeriksa halaman login...");
         assertTrue(loginPage.isLoginPageVisible(), "Halaman login tidak terlihat");

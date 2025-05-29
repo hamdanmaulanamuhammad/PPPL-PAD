@@ -123,7 +123,7 @@ public class ReportPage {
     public boolean isExportErrorMessageVisible() {
         try {
             // Asumsikan pesan error ditampilkan sebagai alert browser
-            WebElement alert = wait.until(ExpectedConditions.alertIsPresent()).getText();
+            String alert = wait.until(ExpectedConditions.alertIsPresent()).getText();
             return alert.contains("Gagal mengekspor");
         } catch (Exception e) {
             System.out.println("Gagal memeriksa pesan error ekspor: " + e.getMessage());

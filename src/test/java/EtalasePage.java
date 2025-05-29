@@ -47,7 +47,7 @@ public class EtalasePage {
     }
 
     // Klik tombol "Lihat Lainnya" untuk kategori tertentu
-    public void clickSeeMoreButton(String categoryName) {
+    public void clickSeeMoreButton(String categoryName) throws Exception {
         try {
             // Cari semua elemen kategori
             List<WebElement> categories = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(categoryTitles));
