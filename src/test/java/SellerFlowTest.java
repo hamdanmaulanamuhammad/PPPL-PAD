@@ -129,8 +129,16 @@ public class SellerFlowTest {
         Thread.sleep(2000);
         assertTrue(reportPage.isExportSuccessful(), "Ekspor Excel tidak berhasil");
 
+        // Langkah 10: Akses halaman Laporan
+        System.out.println("Mengakses halaman Laporan...");
+        sidebarPage.clickProductMenu();
+        Thread.sleep(2000);
+        assertTrue(reportPage.isReportPageVisible(), "Halaman Laporan tidak terlihat");
+        assertTrue(reportPage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
+        assertTrue(reportPage.isReportCardsVisible(), "Kartu laporan tidak terlihat");
+        assertTrue(reportPage.isSalesChartVisible(), "Grafik penjualan tidak terlihat");
 
-        // Langkah 10: Tambah produk baru
+        // Langkah 11: Tambah produk baru
         System.out.println("Mengklik tombol + Produk...");
         WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
         wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
