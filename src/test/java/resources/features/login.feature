@@ -12,4 +12,3 @@ Feature: Seller Login
     And Seller klik tombol "Masuk"
     Then Sistem menampilkan pesan error dan memberikan penanda pada kolom password
     And Seller gagal login
-    And Seller masuk ke halaman detail produk setelah mengakses salah satu produk

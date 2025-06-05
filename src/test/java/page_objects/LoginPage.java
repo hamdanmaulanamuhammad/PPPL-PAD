@@ -14,16 +14,14 @@ public class LoginPage {
     private By emailOrPhoneField = By.id("phone");
     private By passwordField = By.id("password");
     private By loginButton = By.xpath("//button[contains(text(), 'Masuk')]");
-    private By errorMessageLocator = By.cssSelector("div.swal2-html-container"); // Sudah diperbaiki
-    private By tryAgainButton = By.cssSelector("button.swal2-confirm.bg-red-600"); // Tombol "Coba Lagi"
+    private By errorMessageLocator = By.cssSelector("div.swal2-html-container");
+    private By tryAgainButton = By.cssSelector("button.swal2-confirm.bg-red-600");
 
-    // Konstruktor
     public LoginPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    // Verifikasi halaman login terlihat
     public boolean isLoginPageVisible() {
         try {
             WebElement loginInput = wait.until(ExpectedConditions.visibilityOfElementLocated(emailOrPhoneField));
@@ -34,7 +32,6 @@ public class LoginPage {
         }
     }
 
-    // Masukkan email/username/no. telp
     public void enterEmailOrPhone(String emailOrPhone) {
         try {
             WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(emailOrPhoneField));
@@ -45,7 +42,6 @@ public class LoginPage {
         }
     }
 
-    // Masukkan password
     public void enterPassword(String password) {
         try {
             WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
@@ -56,18 +52,16 @@ public class LoginPage {
         }
     }
 
-    // Klik tombol Masuk
     public void clickLoginButton() {
         try {
             WebElement button = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
             button.click();
         } catch (Exception e) {
             System.out.println("Gagal mengklik tombol login: " + e.getMessage());
-            throw e; // Lempar exception agar tes gagal jika tombol tidak bisa diklik
+            throw e;
         }
     }
 
-    // Ambil pesan error
     public boolean isErrorMessageVisible() {
         try {
             WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
@@ -79,16 +73,28 @@ public class LoginPage {
         }
     }
 
-    // Klik tombol "Coba Lagi" untuk menutup modal
     public void clickTryAgainButton() {
         try {
             WebElement button = wait.until(ExpectedConditions.elementToBeClickable(tryAgainButton));
             button.click();
-            // Tunggu hingga modal hilang
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.swal2-container")));
         } catch (Exception e) {
             System.out.println("Gagal mengklik tombol 'Coba Lagi': " + e.getMessage());
             throw e;
+        }
+    }
+
+    // Metode baru untuk memverifikasi penanda pada kolom password
+    public boolean isPasswordFieldHighlighted() {
+        try {
+            WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
+            // Periksa apakah kolom password memiliki class atau style yang menandakan error
+            // Misalnya, class "border-red-500" atau style "border-color: red"
+            String classAttribute = field.getAttribute("class");
+            return classAttribute.contains("border-red-500"); // Sesuaikan dengan class yang digunakan di aplikasi Anda
+        } catch (Exception e) {
+            System.out.println("Gagal memeriksa penanda error pada kolom password: " + e.getMessage());
+            return false;
         }
     }
 }
