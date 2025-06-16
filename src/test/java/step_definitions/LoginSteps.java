@@ -62,11 +62,6 @@ public class LoginSteps {
         wait.until(d -> sidebarPage.isSidebarVisible() || loginPage.isErrorMessageVisible());
     }
 
-    @Then("Seller masuk ke halaman dashboard")
-    public void sellerOnDashboard() {
-
-    }
-
     @Then("Sistem menampilkan pesan error dan memberikan penanda pada kolom password")
     public void systemShowsErrorOnPasswordField() {
         Assert.assertTrue("Pesan error tidak terlihat setelah login gagal", loginPage.isErrorMessageVisible());
@@ -78,6 +73,11 @@ public class LoginSteps {
     public void sellerFailsLogin() {
         Assert.assertFalse("Sidebar terlihat padahal login gagal", sidebarPage.isSidebarVisible());
         Assert.assertTrue("Halaman login masih harus terlihat", loginPage.isLoginPageVisible());
+    }
+
+    @Then("Seller masuk ke halaman dashboard")
+    public void sellerOnDashboard() {
+
     }
 
     @After

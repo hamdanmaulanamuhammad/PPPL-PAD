@@ -30,15 +30,15 @@ public class DashboardSteps {
         driver.get("http://localhost:5173/login");
     }
 
-    @Given("Seller berada di halaman login")
-    public void sellerOnLoginPage() {
-        System.out.println("Memeriksa halaman login...");
+    @Given("Seller berada di halaman login untuk dashboard")
+    public void seller_berada_di_halaman_login_untuk_dashboard() {
+        System.out.println("Memeriksa halaman login untuk akses dashboard...");
         Assert.assertTrue("Halaman login tidak terlihat", loginPage.isLoginPageVisible());
         try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    @When("Seller memasukkan email\\/username\\/nomor telepon dan password")
-    public void sellerMemasukkanEmailUsernameNomorTeleponDanPassword() {
+    @When("Seller memasukkan kredensial valid untuk dashboard")
+    public void seller_memasukkan_kredensial_valid_untuk_dashboard() {
         System.out.println("Mencoba login berhasil...");
         loginPage.enterEmailOrPhone("dummyuser@example.com");
         try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -46,15 +46,16 @@ public class DashboardSteps {
         try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    @When("Seller klik tombol \"Masuk\"")
-    public void sellerClicksLogin() {
+    @When("Seller klik tombol masuk untuk dashboard")
+    public void seller_klik_tombol_masuk_untuk_dashboard() {
         loginPage.clickLoginButton();
         try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
         wait.until(d -> sidebarPage.isSidebarVisible() || loginPage.isErrorMessageVisible());
+        Assert.assertTrue("Sidebar tidak terlihat setelah login berhasil", sidebarPage.isSidebarVisible());
     }
 
-    @Then("Seller masuk ke halaman dashboard")
-    public void sellerOnDashboard() {
+    @Then("Seller berhasil masuk ke halaman dashboard")
+    public void sellerSuccessfullyOnDashboard() {
         if (sidebarPage.isSidebarVisible()) {
             sidebarPage.toggleSidebarIfMobile();
             sidebarPage.dismissOverlayIfPresent();
@@ -65,29 +66,29 @@ public class DashboardSteps {
     }
 
     @When("Seller mengakses halaman dashboard")
-    public void sellerMengaksesHalamanDashboard() {
+    public void sellerAccessesDashboardPage() {
         System.out.println("Mengakses halaman dashboard...");
         sidebarPage.clickDashboardMenu();
         try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
     @Then("Halaman dashboard terlihat")
-    public void halamanDashboardTerlihat() {
+    public void dashboardPageIsVisible() {
         Assert.assertTrue("Halaman dashboard tidak terlihat", dashboardPage.isDashboardPageVisible());
     }
 
     @Then("Statistik card terlihat")
-    public void statistikCardTerlihat() {
+    public void statCardIsVisible() {
         Assert.assertTrue("Statistik card tidak terlihat", dashboardPage.isStatCardVisible());
     }
 
     @Then("Grafik terlihat")
-    public void grafikTerlihat() {
+    public void chartIsVisible() {
         Assert.assertTrue("Grafik tidak terlihat", dashboardPage.isChartVisible());
     }
 
     @Then("Statistik dashboard ditampilkan")
-    public void statistikDashboardDitampilkan() {
+    public void dashboardStatsAreDisplayed() {
         dashboardPage.printDashboardStats();
         try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
     }
