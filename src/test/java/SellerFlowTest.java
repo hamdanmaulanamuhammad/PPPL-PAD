@@ -26,7 +26,7 @@ public class SellerFlowTest {
     private ReportPage reportPage;
     private ProductPage productPage;
     private ModalAddProductPage modalAddProductPage;
-
+    private ModalEditProductPage modalEditProductPage;
     @BeforeEach
     public void setUp() throws InterruptedException {
         driver = new ChromeDriver();
@@ -40,6 +40,7 @@ public class SellerFlowTest {
         reportPage = new ReportPage(driver);
         productPage = new ProductPage(driver);
         modalAddProductPage = new ModalAddProductPage(driver);
+        modalEditProductPage = new ModalEditProductPage(driver);
         driver.get("http://localhost:5173/login");
     }
 
@@ -179,14 +180,58 @@ public class SellerFlowTest {
 
         System.out.println("Mengklik tombol Tambahkan Produk...");
         modalAddProductPage.clickTambahButton();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         System.out.println("Memeriksa pesan sukses...");
         assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
 
         System.out.println("Memeriksa produk baru di tabel...");
+        Thread.sleep(1000);
+        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+
+
+        // Langkah 12: Edit produk yang baru ditambahkan
+        System.out.println("Mengedit produk 'Custom T-Shirt'...");
+        WebElement editButton = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]//button[contains(@class, 'text-black-500') and .//i[contains(@class, 'fa-pen-to-square')]]"));
+        wait.until(ExpectedConditions.elementToBeClickable(editButton)).click();
+        Thread.sleep(2000);
+        assertTrue(modalEditProductPage.isModalVisible(), "Modal Edit Produk tidak terlihat");
+
+        System.out.println("Mengisi data pada modal Edit Produk...");
+        modalEditProductPage.enterProductName("Custom T-Shirt Premium");
+        modalEditProductPage.enterDescription("Premium quality custom printed T-shirt with enhanced durability");
+        modalEditProductPage.enterUnit("piece");
+        Thread.sleep(1000);
+
+        // Tambahkan variasi baru
+        System.out.println("Menambahkan variasi baru pada produk...");
+        modalEditProductPage.clickAddVariationButton();
+        modalEditProductPage.fillVariationDetails(
+                "Large Size", "180000", "30", "250", "1", false
+        );
+        Thread.sleep(1000);
+
+        System.out.println("Mengklik tombol Simpan...");
+        modalEditProductPage.clickSimpanButton();
+        Thread.sleep(2000);
+
+        System.out.println("Memeriksa pesan sukses...");
+        assertTrue(modalEditProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah mengedit produk");
+
+        System.out.println("Memeriksa produk yang diedit di tabel...");
         Thread.sleep(2000);
         assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+        try {
+            WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt Premium']]"));
+            assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt Premium' tidak terlihat di tabel setelah diedit");
+            Map<String, String> productDetails = productPage.getProductDetails("Custom T-Shirt Premium");
+            assertEquals("Premium quality custom printed T-shirt with enhanced durability", productDetails.get("description"),
+                    "Deskripsi produk tidak sesuai setelah diedit");
+            assertEquals("2 variasi", productDetails.get("variant"),
+                    "Jumlah variasi produk tidak sesuai setelah diedit");
+        } catch (Exception e) {
+            throw new RuntimeException("Gagal menemukan produk 'Custom T-Shirt Premium' di tabel: " + e.getMessage(), e);
+        }
     }
 
     @Test

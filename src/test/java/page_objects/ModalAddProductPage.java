@@ -27,8 +27,7 @@ public class ModalAddProductPage {
     private By variationMinQtyInput = By.cssSelector(".variation-box:last-child .variation-min-qty");
     private By variationDefaultRadio = By.cssSelector(".variation-box:last-child .variation-default");
     private By confirmButton = By.cssSelector(".swal2-confirm");
-    private By successMessage = By.cssSelector(".swal2-success .swal2-title");
-
+    private By successMessage =By.cssSelector("div.swal2-html-container");
     // Constructor
     public ModalAddProductPage(WebDriver driver) {
         this.driver = driver;
