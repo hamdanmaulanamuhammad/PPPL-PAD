@@ -83,18 +83,22 @@ public class ProductPage {
         }
     }
 
-    // Change the status of a product by product name
+    // Change the status of a product by product name to a specific status
     public void changeProductStatus(String productName, String newStatus) {
         // Find the product row by name
         WebElement productRow = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//tbody/tr[td[2][text()='" + productName + "']]")));
-        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("td:nth-child(9) select.status-dropdown"));
+
+        // Find the status dropdown within the product row
+        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("select.status-dropdown"));
 
         // Ensure dropdown is interactable and select new status
         wait.until(ExpectedConditions.elementToBeClickable(statusDropdownElement));
         statusDropdownElement.click();
+
+        // Select the new status
         WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//select[contains(@class, 'status-dropdown')]/option[@value='" + newStatus + "']")));
+                By.xpath("//tbody/tr[td[2][text()='" + productName + "']]//select[contains(@class, 'status-dropdown')]/option[@value='" + newStatus + "']")));
         option.click();
 
         // Wait for and confirm the status change in the SweetAlert2 modal
@@ -120,7 +124,7 @@ public class ProductPage {
     public String getProductStatus(String productName) {
         WebElement productRow = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//tbody/tr[td[2][text()='" + productName + "']]")));
-        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("td:nth-child(9) select.status-dropdown"));
+        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("select.status-dropdown"));
         return statusDropdownElement.getAttribute("value");
     }
 
