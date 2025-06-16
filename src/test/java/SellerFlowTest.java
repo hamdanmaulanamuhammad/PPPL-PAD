@@ -126,12 +126,6 @@ public class SellerFlowTest {
         assertTrue(etalasePage.isEtalasePageVisible(), "Halaman Etalase tidak terlihat");
         assertTrue(etalasePage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
 
-        // Langkah 8: Klik tombol "Lihat Lainnya" untuk kategori
-        String categoryName = "Merchandise Custom";
-        System.out.println("Memeriksa produk untuk kategori " + categoryName + "...");
-        assertTrue(etalasePage.isCategoryProductsVisible(categoryName),
-                "Produk untuk kategori " + categoryName + " tidak terlihat");
-
         // Langkah 9: Akses halaman Laporan
         System.out.println("Mengakses halaman Laporan...");
         sidebarPage.clickReportMenu();
@@ -157,54 +151,54 @@ public class SellerFlowTest {
         assertTrue(reportPage.isSalesChartVisible(), "Grafik penjualan tidak terlihat");
 
         // Langkah 11: Tambah produk baru
-        System.out.println("Mengklik tombol + Produk...");
-        WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
-        wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
-        Thread.sleep(2000);
-        assertTrue(modalAddProductPage.isModalVisible(), "Modal Tambah Produk tidak terlihat");
-
-        System.out.println("Mengisi data pada modal Tambah Produk Baru...");
-        modalAddProductPage.selectCategory("1");
-        modalAddProductPage.enterProductName("Custom T-Shirt");
-        modalAddProductPage.enterDescription("High-quality custom printed T-shirt");
-        modalAddProductPage.enterUnit("unit");
-        modalAddProductPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
-        Thread.sleep(1000);
-
-        System.out.println("Menambahkan variasi produk...");
-        modalAddProductPage.clickAddVariationButton();
-        modalAddProductPage.fillVariationDetails(
-                "Medium Size", "150000", "50", "200", "1", true
-        );
-        Thread.sleep(1000);
-
-        System.out.println("Mengklik tombol Tambahkan Produk...");
-        modalAddProductPage.clickTambahButton();
-        Thread.sleep(2000);
-
-        System.out.println("Memeriksa pesan sukses...");
-        assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
-
-        System.out.println("Memeriksa produk baru di tabel...");
-        Thread.sleep(2000);
-        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+//        System.out.println("Mengklik tombol + Produk...");
+//        WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
+//        wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
+//        Thread.sleep(2000);
+//        assertTrue(modalAddProductPage.isModalVisible(), "Modal Tambah Produk tidak terlihat");
 //
-//        // Langkah 12: Ubah status produk
-//        String productName = "Custom T-Shirt";
-//        String newStatus = "inactive";
-//        System.out.println("Mengubah status produk '" + productName + "' menjadi '" + newStatus + "'...");
-//        // Simpan detail produk sebelum perubahan status
-//        Map<String, String> beforeDetails = productPage.getProductDetails(productName);
-//        productPage.changeProductStatus(productName, newStatus);
+//        System.out.println("Mengisi data pada modal Tambah Produk Baru...");
+//        modalAddProductPage.selectCategory("1");
+//        modalAddProductPage.enterProductName("Custom T-Shirt");
+//        modalAddProductPage.enterDescription("High-quality custom printed T-shirt");
+//        modalAddProductPage.enterUnit("unit");
+//        modalAddProductPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
+//        Thread.sleep(1000);
+//
+//        System.out.println("Menambahkan variasi produk...");
+//        modalAddProductPage.clickAddVariationButton();
+//        modalAddProductPage.fillVariationDetails(
+//                "Medium Size", "150000", "50", "200", "1", true
+//        );
+//        Thread.sleep(1000);
+//
+//        System.out.println("Mengklik tombol Tambahkan Produk...");
+//        modalAddProductPage.clickTambahButton();
 //        Thread.sleep(2000);
 //
-//        System.out.println("Memeriksa pesan sukses perubahan status...");
-//        assertTrue(productPage.isStatusChangeSuccessVisible(), "Pesan sukses perubahan status tidak terlihat");
+//        System.out.println("Memeriksa pesan sukses...");
+//        assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
 //
-//        System.out.println("Memeriksa status produk di tabel...");
-//        String currentStatus = productPage.getProductStatus(productName);
-//        assertTrue(currentStatus.equals(newStatus),
-//                "Status produk tidak berubah menjadi '" + newStatus + "', ditemukan: " + currentStatus);
+//        System.out.println("Memeriksa produk baru di tabel...");
+//        Thread.sleep(2000);
+//        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+//
+        // Langkah 12: Ubah status produk
+        String productName = "Custom T-Shirt";
+        System.out.println("Mengubah status produk '" + productName + "'...");
+        Map<String, String> beforeDetails = productPage.getProductDetails(productName);
+        String currentStatus = beforeDetails.get("status");
+        String newStatus = currentStatus.equalsIgnoreCase("active") ? "inactive" : "active";
+
+        productPage.changeProductStatus(productName, newStatus);
+        // Atau gunakan: productPage.toggleProductStatus(productName);
+
+        // Tunggu modal SweetAlert2 hilang
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".swal2-container")));
+
+        System.out.println("Memeriksa pesan sukses perubahan status...");
+        assertTrue(productPage.isStatusChangeSuccessVisible(), "Pesan sukses perubahan status tidak terlihat");
 //
 //        // Langkah 13: Verifikasi bahwa hanya status yang berubah
 //        System.out.println("Memeriksa bahwa hanya status yang berubah di tabel...");

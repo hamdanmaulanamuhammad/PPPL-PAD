@@ -71,28 +71,44 @@ public class ProductPage {
         return status.equals("all") || statusCells.stream().allMatch(cell -> cell.getAttribute("value").equalsIgnoreCase(status));
     }
 
-    // Change the status of a product by product name
+    // Change the status of a product by product name to a specific status
     public void changeProductStatus(String productName, String newStatus) {
         // Find the product row by name
         WebElement productRow = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//tbody/tr[td[2][text()='" + productName + "']]")));
-        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("td:nth-child(9) select.status-dropdown"));
+
+        // Find the status dropdown within the product row
+        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("select.status-dropdown"));
 
         // Ensure dropdown is interactable
         wait.until(ExpectedConditions.elementToBeClickable(statusDropdownElement));
         statusDropdownElement.click();
 
-        // Select the new status
+        // Select the new status option specific to this dropdown
         WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//select[contains(@class, 'status-dropdown')]/option[@value='" + newStatus + "']")));
+                By.xpath("//tbody/tr[td[2][text()='" + productName + "']]//select[contains(@class, 'status-dropdown')]/option[@value='" + newStatus + "']")));
         option.click();
 
         // Wait for and confirm the status change in the SweetAlert2 modal
-        WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(confirmStatusButton));
-        confirmButton.click();
+        try {
+            WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(confirmStatusButton));
+            confirmButton.click();
 
-        // Wait for the success message to ensure the status change is complete
-        wait.until(ExpectedConditions.visibilityOfElementLocated(successMessageText));
+            // Wait for the success message
+            wait.until(ExpectedConditions.visibilityOfElementLocated(successMessageText));
+        } catch (Exception e) {
+            throw new RuntimeException("Gagal mengkonfirmasi perubahan status untuk produk: " + productName, e);
+        }
+    }
+
+    // Toggle the status of a product (e.g., from active to inactive or vice versa)
+    public void toggleProductStatus(String productName) {
+        // Get current status
+        String currentStatus = getProductStatus(productName);
+        String newStatus = currentStatus.equalsIgnoreCase("active") ? "inactive" : "active";
+
+        // Change to the opposite status
+        changeProductStatus(productName, newStatus);
     }
 
     // Verify status change success message
@@ -109,7 +125,7 @@ public class ProductPage {
     public String getProductStatus(String productName) {
         WebElement productRow = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//tbody/tr[td[2][text()='" + productName + "']]")));
-        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("td:nth-child(9) select.status-dropdown"));
+        WebElement statusDropdownElement = productRow.findElement(By.cssSelector("select.status-dropdown"));
         return statusDropdownElement.getAttribute("value");
     }
 
