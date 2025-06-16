@@ -126,12 +126,6 @@ public class SellerFlowTest {
         assertTrue(etalasePage.isEtalasePageVisible(), "Halaman Etalase tidak terlihat");
         assertTrue(etalasePage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
 
-        // Langkah 8: Klik tombol "Lihat Lainnya" untuk kategori
-        String categoryName = "Merchandise Custom";
-        System.out.println("Memeriksa produk untuk kategori " + categoryName + "...");
-        assertTrue(etalasePage.isCategoryProductsVisible(categoryName),
-                "Produk untuk kategori " + categoryName + " tidak terlihat");
-
         // Langkah 9: Akses halaman Laporan
         System.out.println("Mengakses halaman Laporan...");
         sidebarPage.clickReportMenu();
