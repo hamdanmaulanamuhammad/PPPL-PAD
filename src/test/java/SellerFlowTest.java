@@ -90,17 +90,34 @@ public class SellerFlowTest {
         assertTrue(withdrawalPage.isTableVisible() || withdrawalPage.isErrorMessageVisible(),
                 "Tabel penarikan tidak muncul dan tidak ada pesan error");
 
-        // Langkah 6: Simulasi penarikan dana
+        // Langkah 6: Simulasi penarikan dana (commented out)
+        // Positive Test Case - Normal Withdrawal
+        System.out.println("=== POSITIVE TEST CASE ===");
         System.out.println("Memulai simulasi penarikan dana...");
         withdrawalPage.clickWithdrawButton();
         Thread.sleep(2000);
         System.out.println("Menambahkan rekening baru...");
-        withdrawalPage.addNewAccount("odit", "1234567890", "John Doe");
+        withdrawalPage.addNewAccount("minima", "1234567890", "John Doe");
         Thread.sleep(2000);
         System.out.println("Mengajukan penarikan dana...");
-        withdrawalPage.submitWithdrawal("odit - 1234567890", "1000000");
+        withdrawalPage.submitWithdrawal("minima - 1234567890", "1000000");
         Thread.sleep(2000);
         System.out.println("Penarikan dana diajukan.");
+
+        System.out.println("\n=== NEGATIVE TEST CASE ===");
+        System.out.println("Memulai simulasi penarikan dana dengan jumlah negatif...");
+        withdrawalPage.clickWithdrawButton();
+        Thread.sleep(2000);
+        System.out.println("Mengajukan penarikan dana dengan jumlah negatif...");
+        try {
+            withdrawalPage.submitWithdrawal("minima - 1234567890", "-200000");
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            System.out.println("Penarikan gagal seperti yang diharapkan: " + e.getMessage());
+        } finally {
+            System.out.println("Menutup modal...");
+            withdrawalPage.closeModal();
+        }
 
         // Langkah 7: Akses halaman Etalase
         System.out.println("Mengakses halaman Etalase...");
