@@ -14,6 +14,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- JUnit untuk testing -->
         <dependency>
@@ -35,5 +42,21 @@
             <artifactId>selenium-java</artifactId>
             <version>4.31.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.23.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Cucumber JUnit (untuk menjalankan pengujian dengan JUnit) -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>7.23.0</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 </project>
