@@ -87,13 +87,10 @@ public class LoginPage {
     // Metode baru untuk memverifikasi penanda pada kolom password
     public boolean isPasswordFieldHighlighted() {
         try {
-            WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
-            // Periksa apakah kolom password memiliki class atau style yang menandakan error
-            // Misalnya, class "border-red-500" atau style "border-color: red"
-            String classAttribute = field.getAttribute("class");
-            return classAttribute.contains("border-red-500"); // Sesuaikan dengan class yang digunakan di aplikasi Anda
+            WebElement errorModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.swal2-html-container")));
+            return errorModal.isDisplayed() && errorModal.getText().contains("Periksa kembali email/username dan password Anda.");
         } catch (Exception e) {
-            System.out.println("Gagal memeriksa penanda error pada kolom password: " + e.getMessage());
+            System.out.println("Gagal memeriksa modal error: " + e.getMessage());
             return false;
         }
     }
