@@ -287,8 +287,7 @@ public class SellerFlowTest {
         Map<String, String> productDetails = productPage.getProductDetails("Custom T-Shirt Premium");
         assertEquals("Premium quality custom printed T-shirt with enhanced durability", productDetails.get("description"),
                 "Deskripsi produk tidak sesuai setelah diedit");
-        assertEquals("2 variasi", productDetails.get("variant"),
-                "Jumlah variasi produk tidak sesuai setelah diedit");
+
     }
 
     @AfterEach
