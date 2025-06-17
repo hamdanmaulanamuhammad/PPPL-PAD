@@ -28,7 +28,7 @@ public class ModalEditProductPage {
     private By variationDefaultRadio = By.cssSelector("input.variation-default");
     private By simpanButton = By.cssSelector("button.swal2-confirm");
     // Updated locator for SweetAlert2 success message
-    private By successMessage = By.cssSelector("div.swal2-popup div.swal2-html-container");
+    private By successMessage = By.cssSelector("div.swal2-html-container");
     public ModalEditProductPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -122,8 +122,6 @@ public class ModalEditProductPage {
         try {
             // Wait for the SweetAlert2 modal to be visible
             WebElement success = wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
-            System.out.println("Success message found with text: " + success.getText());
-            System.out.println("Element tag: " + success.getTagName() + ", Class: " + success.getAttribute("class"));
             return success.isDisplayed();
         } catch (Exception e) {
             System.out.println("Failed to detect success message: " + e.getMessage());

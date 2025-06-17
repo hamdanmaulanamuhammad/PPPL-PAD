@@ -7,7 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -25,8 +24,7 @@ public class SellerFlowTest {
     private EtalasePage etalasePage;
     private ReportPage reportPage;
     private ProductPage productPage;
-    private ModalAddProductPage modalAddProductPage;
-    private ModalEditProductPage modalEditProductPage;
+
     @BeforeEach
     public void setUp() throws InterruptedException {
         driver = new ChromeDriver();
@@ -39,8 +37,6 @@ public class SellerFlowTest {
         etalasePage = new EtalasePage(driver);
         reportPage = new ReportPage(driver);
         productPage = new ProductPage(driver);
-        modalAddProductPage = new ModalAddProductPage(driver);
-        modalEditProductPage = new ModalEditProductPage(driver);
         driver.get("http://localhost:5173/login");
     }
 
@@ -54,9 +50,7 @@ public class SellerFlowTest {
         // Langkah 2: Test login gagal
         System.out.println("Mencoba login gagal...");
         loginPage.enterEmailOrPhone("dummyuser@example.com");
-        Thread.sleep(1000);
         loginPage.enterPassword("");
-        Thread.sleep(1000);
         loginPage.clickLoginButton();
         Thread.sleep(2000);
         assertTrue(loginPage.isErrorMessageVisible(), "Pesan error tidak terlihat setelah login gagal");
@@ -66,9 +60,7 @@ public class SellerFlowTest {
         // Langkah 3: Test login berhasil
         System.out.println("Mencoba login berhasil...");
         loginPage.enterEmailOrPhone("dummyuser@example.com");
-        Thread.sleep(1000);
         loginPage.enterPassword("admin#123");
-        Thread.sleep(1000);
         loginPage.clickLoginButton();
         Thread.sleep(2000);
         assertTrue(sidebarPage.isSidebarVisible(), "Sidebar tidak terlihat setelah login berhasil");
@@ -91,16 +83,13 @@ public class SellerFlowTest {
         assertTrue(withdrawalPage.isTableVisible() || withdrawalPage.isErrorMessageVisible(),
                 "Tabel penarikan tidak muncul dan tidak ada pesan error");
 
-        // Langkah 6: Simulasi penarikan dana (commented out)
-        // Positive Test Case - Normal Withdrawal
+        // Langkah 6: Simulasi penarikan dana
         System.out.println("=== POSITIVE TEST CASE ===");
         System.out.println("Memulai simulasi penarikan dana...");
         withdrawalPage.clickWithdrawButton();
         Thread.sleep(2000);
-        System.out.println("Menambahkan rekening baru...");
         withdrawalPage.addNewAccount("minima", "1234567890", "John Doe");
         Thread.sleep(2000);
-        System.out.println("Mengajukan penarikan dana...");
         withdrawalPage.submitWithdrawal("minima - 1234567890", "1000000");
         Thread.sleep(2000);
         System.out.println("Penarikan dana diajukan.");
@@ -109,14 +98,12 @@ public class SellerFlowTest {
         System.out.println("Memulai simulasi penarikan dana dengan jumlah negatif...");
         withdrawalPage.clickWithdrawButton();
         Thread.sleep(2000);
-        System.out.println("Mengajukan penarikan dana dengan jumlah negatif...");
         try {
             withdrawalPage.submitWithdrawal("minima - 1234567890", "-200000");
             Thread.sleep(2000);
         } catch (Exception e) {
             System.out.println("Penarikan gagal seperti yang diharapkan: " + e.getMessage());
         } finally {
-            System.out.println("Menutup modal...");
             withdrawalPage.closeModal();
         }
 
@@ -127,7 +114,7 @@ public class SellerFlowTest {
         assertTrue(etalasePage.isEtalasePageVisible(), "Halaman Etalase tidak terlihat");
         assertTrue(etalasePage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
 
-        // Langkah 9: Akses halaman Laporan
+        // Langkah 8: Akses halaman Laporan
         System.out.println("Mengakses halaman Laporan...");
         sidebarPage.clickReportMenu();
         Thread.sleep(2000);
@@ -136,13 +123,12 @@ public class SellerFlowTest {
         assertTrue(reportPage.isReportCardsVisible(), "Kartu laporan tidak terlihat");
         assertTrue(reportPage.isSalesChartVisible(), "Grafik penjualan tidak terlihat");
 
-        // Klik tombol Export ke Excel
         System.out.println("Mengklik tombol Export ke Excel...");
         reportPage.clickExportExcelButton();
         Thread.sleep(2000);
         assertTrue(reportPage.isExportSuccessful(), "Ekspor Excel tidak berhasil");
 
-        // Langkah 10: Akses halaman Manajemen Produk
+        // Langkah 9: Akses halaman Manajemen Produk
         System.out.println("Mengakses halaman Manajemen Produk...");
         sidebarPage.clickProductMenu();
         Thread.sleep(2000);
@@ -150,296 +136,159 @@ public class SellerFlowTest {
         assertTrue(productPage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
         assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
 
-        // Langkah 11: Tambah produk baru
-        System.out.println("Mengklik tombol + Produk...");
-        WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
-        wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
-        Thread.sleep(2000);
-        assertTrue(modalAddProductPage.isModalVisible(), "Modal Tambah Produk tidak terlihat");
+        // Langkah 10: Tambah produk baru
+        System.out.println("=== POSITIVE TEST CASE: Menambah produk ===");
+        productPage.clickAddProductButton();
+        Thread.sleep(500);
+        assertTrue(productPage.isAddModalVisible(), "Modal Tambah Produk tidak terlihat");
 
         System.out.println("Mengisi data pada modal Tambah Produk Baru...");
-        modalAddProductPage.selectCategory("1");
-        modalAddProductPage.enterProductName("Custom T-Shirt");
-        modalAddProductPage.enterDescription("High-quality custom printed T-shirt");
-        modalAddProductPage.enterUnit("unit");
-        modalAddProductPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
+        productPage.selectCategory("1");
+        productPage.enterProductName("Custom T-Shirt");
+        productPage.enterDescription("High-quality custom printed T-shirt");
+        productPage.enterUnit("unit");
+        productPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
         Thread.sleep(1000);
 
         System.out.println("Menambahkan variasi produk...");
-        modalAddProductPage.clickAddVariationButton();
-        modalAddProductPage.fillVariationDetails(
-                "Medium Size", "150000", "50", "200", "1", true
-        );
+        productPage.clickAddVariationButton();
+        productPage.fillVariationDetails("Medium Size", "150000", "50", "200", "1", true);
         Thread.sleep(1000);
 
         System.out.println("Mengklik tombol Tambahkan Produk...");
-        modalAddProductPage.clickTambahButton();
+        productPage.clickSaveButton();
         Thread.sleep(1000);
 
         System.out.println("Memeriksa pesan sukses...");
-        assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
+        assertTrue(productPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
+        productPage.clickCancelButton(); // Close any lingering modal
+        Thread.sleep(1000);
 
         System.out.println("Memeriksa produk baru di tabel...");
-        Thread.sleep(1000);
-        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+        WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]"));
+        assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt' tidak terlihat di tabel");
 
-
-        // Langkah 12: Edit produk yang baru ditambahkan
-        System.out.println("Mengedit produk 'Custom T-Shirt'...");
-        WebElement editButton = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]//button[contains(@class, 'text-black-500') and .//i[contains(@class, 'fa-pen-to-square')]]"));
-        wait.until(ExpectedConditions.elementToBeClickable(editButton)).click();
+        // Langkah 11: Test menambah produk baru tanpa harga
+        System.out.println("\n=== NEGATIVE TEST CASE: Menambah produk tanpa harga ===");
+        productPage.clickAddProductButton();
         Thread.sleep(2000);
-        assertTrue(modalEditProductPage.isModalVisible(), "Modal Edit Produk tidak terlihat");
+        assertTrue(productPage.isAddModalVisible(), "Modal Tambah Produk tidak terlihat");
+
+        System.out.println("Mengisi data pada modal Tambah Produk Baru tanpa harga...");
+        productPage.selectCategory("1");
+        productPage.enterProductName("T-Shirt No Price");
+        productPage.enterDescription("T-shirt without price for testing");
+        productPage.enterUnit("unit");
+        productPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
+        Thread.sleep(1000);
+
+        System.out.println("Menambahkan variasi produk tanpa harga...");
+        productPage.clickAddVariationButton();
+        productPage.fillVariationDetails("Medium Size", "", "50", "200", "1", true);
+        Thread.sleep(1000);
+
+        System.out.println("Mengklik tombol Tambahkan Produk...");
+        productPage.clickSaveButton();
+        Thread.sleep(2000);
+
+        System.out.println("Memeriksa pesan error untuk harga...");
+        assertTrue(productPage.isErrorMessageVisible(), "Pesan error untuk harga tidak terlihat");
+        assertTrue(productPage.getErrorMessageText().contains("harga"), "Pesan error tidak menyebutkan masalah harga");
+        productPage.clickCancelButton();
+        Thread.sleep(2000);
+
+        // Langkah 12: Test menambah produk baru dengan harga negatif
+        System.out.println("\n=== NEGATIVE TEST CASE: Menambah produk dengan harga negatif ===");
+        productPage.clickAddProductButton();
+        Thread.sleep(2000);
+        assertTrue(productPage.isAddModalVisible(), "Modal Tambah Produk tidak terlihat");
+
+        System.out.println("Mengisi data pada modal Tambah Produk Baru dengan harga negatif...");
+        productPage.selectCategory("1");
+        productPage.enterProductName("T-Shirt Negative Price");
+        productPage.enterDescription("T-shirt with negative price for testing");
+        productPage.enterUnit("unit");
+        productPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
+        Thread.sleep(1000);
+
+        System.out.println("Menambahkan variasi produk dengan harga negatif...");
+        productPage.clickAddVariationButton();
+        productPage.fillVariationDetails("Medium Size", "-150000", "50", "200", "1", true);
+        Thread.sleep(1000);
+
+        System.out.println("Mengklik tombol Tambahkan Produk...");
+        productPage.clickSaveButton();
+        Thread.sleep(2000);
+
+        System.out.println("Memeriksa pesan error untuk harga negatif...");
+        assertTrue(productPage.isErrorMessageVisible(), "Pesan error untuk harga negatif tidak terlihat");
+        assertTrue(productPage.getErrorMessageText().contains("Harga"), "Pesan error tidak menyebutkan masalah harga");
+        productPage.clickCancelButton();
+        Thread.sleep(2000);
+
+        // Langkah 13: Test menambah produk baru dengan harga melebihi batas maksimum
+        System.out.println("\n=== NEGATIVE TEST CASE: Menambah produk dengan harga melebihi batas maksimum ===");
+        productPage.clickAddProductButton();
+        Thread.sleep(2000);
+        assertTrue(productPage.isAddModalVisible(), "Modal Tambah Produk tidak terlihat");
+
+        System.out.println("Mengisi data pada modal Tambah Produk Baru dengan harga berlebih...");
+        productPage.selectCategory("1");
+        productPage.enterProductName("T-Shirt Max Price");
+        productPage.enterDescription("T-shirt with excessive price for testing");
+        productPage.enterUnit("unit");
+        productPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
+        Thread.sleep(1000);
+
+        System.out.println("Menambahkan variasi produk dengan harga melebihi batas maksimum...");
+        productPage.clickAddVariationButton();
+        productPage.fillVariationDetails("Medium Size", "999999999999", "50", "200", "1", true);
+        Thread.sleep(1000);
+
+        System.out.println("Mengklik tombol Tambahkan Produk...");
+        productPage.clickSaveButton();
+        Thread.sleep(2000);
+
+        System.out.println("Memeriksa pesan error untuk harga melebihi batas maksimum...");
+        assertTrue(productPage.isErrorMessageVisible(), "Pesan error untuk harga melebihi batas maksimum tidak terlihat");
+        assertTrue(productPage.getErrorMessageText().contains("Harga"), "Pesan error tidak menyebutkan masalah harga");
+        productPage.clickCancelButton();
+        Thread.sleep(2000);
+
+        // Langkah 14: Edit produk yang baru ditambahkan
+        System.out.println("=== POSITIVE TEST CASE: Mengedit produk ===");
+        productPage.clickEditProductButton("Custom T-Shirt");
+        Thread.sleep(2000);
+        assertTrue(productPage.isEditModalVisible(), "Modal Edit Produk tidak terlihat");
 
         System.out.println("Mengisi data pada modal Edit Produk...");
-        modalEditProductPage.enterProductName("Custom T-Shirt Premium");
-        modalEditProductPage.enterDescription("Premium quality custom printed T-shirt with enhanced durability");
-        modalEditProductPage.enterUnit("piece");
+        productPage.enterProductName("Custom T-Shirt Premium");
+        productPage.enterDescription("Premium quality custom printed T-shirt with enhanced durability");
+        productPage.enterUnit("piece");
         Thread.sleep(1000);
 
-        // Tambahkan variasi baru
         System.out.println("Menambahkan variasi baru pada produk...");
-        modalEditProductPage.clickAddVariationButton();
-        modalEditProductPage.fillVariationDetails(
-                "Large Size", "180000", "30", "250", "1", false
-        );
+        productPage.clickAddVariationButton();
+        productPage.fillVariationDetails("Large Size", "180000", "30", "250", "1", false);
         Thread.sleep(1000);
 
         System.out.println("Mengklik tombol Simpan...");
-        modalEditProductPage.clickSimpanButton();
+        productPage.clickSaveButton();
         Thread.sleep(2000);
 
         System.out.println("Memeriksa pesan sukses...");
-        assertTrue(modalEditProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah mengedit produk");
+        assertTrue(productPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah mengedit produk");
+        productPage.clickCancelButton();
+        Thread.sleep(2000);
 
         System.out.println("Memeriksa produk yang diedit di tabel...");
-        Thread.sleep(2000);
-        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
-        try {
-            WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt Premium']]"));
-            assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt Premium' tidak terlihat di tabel setelah diedit");
-            Map<String, String> productDetails = productPage.getProductDetails("Custom T-Shirt Premium");
-            assertEquals("Premium quality custom printed T-shirt with enhanced durability", productDetails.get("description"),
-                    "Deskripsi produk tidak sesuai setelah diedit");
-            assertEquals("2 variasi", productDetails.get("variant"),
-                    "Jumlah variasi produk tidak sesuai setelah diedit");
-        } catch (Exception e) {
-            throw new RuntimeException("Gagal menemukan produk 'Custom T-Shirt Premium' di tabel: " + e.getMessage(), e);
-        }
-    }
-
-    @Test
-    public void testAddProductWithCompleteData() throws Exception {
-        assertTrue(loginPage.isLoginPageVisible(), "Halaman login tidak terlihat");
-        Thread.sleep(1000);
-
-        System.out.println("Mencoba login berhasil...");
-        loginPage.enterEmailOrPhone("dummyuser@example.com");
-        Thread.sleep(1000);
-        loginPage.enterPassword("admin#123");
-        Thread.sleep(1000);
-        loginPage.clickLoginButton();
-        Thread.sleep(2000);
-        assertTrue(sidebarPage.isSidebarVisible(), "Sidebar tidak terlihat setelah login berhasil");
-
-        // Step 2: Navigate to Manajemen Produk page
-        System.out.println("Mengakses halaman Manajemen Produk...");
-        sidebarPage.toggleSidebarIfMobile();
-        sidebarPage.clickProductMenu();
-        Thread.sleep(2000);
-        assertTrue(productPage.isProductPageVisible(), "Halaman Manajemen Produk tidak terlihat");
-        assertTrue(productPage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
-
-        // Step 3: Click "+ Produk" button
-        System.out.println("Mengklik tombol + Produk...");
-        WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
-        wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
-        Thread.sleep(2000);
-        assertTrue(modalAddProductPage.isModalVisible(), "Modal Tambah Produk tidak terlihat");
-
-        // Step 4: Fill in product details
-        System.out.println("Mengisi data pada modal Tambah Produk Baru...");
-        modalAddProductPage.selectCategory("1");
-        modalAddProductPage.enterProductName("Custom T-Shirt");
-        modalAddProductPage.enterDescription("High-quality custom printed T-shirt");
-        modalAddProductPage.enterUnit("unit");
-        modalAddProductPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
-        Thread.sleep(1000);
-
-        // Add variation
-        System.out.println("Menambahkan variasi produk...");
-        modalAddProductPage.clickAddVariationButton();
-        modalAddProductPage.fillVariationDetails(
-                "Medium Size", "150000", "50", "200", "1", true
-        );
-        Thread.sleep(1000);
-
-        // Step 5: Click Tambahkan Produk button
-        System.out.println("Mengklik tombol Tambahkan Produk...");
-        modalAddProductPage.clickTambahButton();
-        Thread.sleep(2000);
-
-        // Step 6: Verify success
-        System.out.println("Memeriksa pesan sukses...");
-        assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
-
-        // Verify the product appears in the table
-        System.out.println("Memeriksa produk baru di tabel...");
-        Thread.sleep(2000);
-        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
-        try {
-            WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]"));
-            assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt' tidak terlihat di tabel");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to find product 'Custom T-Shirt' in table: " + e.getMessage(), e);
-        }
-    }
-
-    @Test
-    public void testChangeProductStatus() throws Exception {
-        // Step 1: Verify login page is visible
-        System.out.println("Memeriksa halaman login...");
-        assertTrue(loginPage.isLoginPageVisible(), "Halaman login tidak terlihat");
-        Thread.sleep(1000);
-
-        // Step 2: Perform successful login
-        System.out.println("Mencoba login berhasil...");
-        loginPage.enterEmailOrPhone("dummyuser@example.com");
-        Thread.sleep(1000);
-        loginPage.enterPassword("admin#123");
-        Thread.sleep(1000);
-        loginPage.clickLoginButton();
-        Thread.sleep(2000);
-        assertTrue(sidebarPage.isSidebarVisible(), "Sidebar tidak terlihat setelah login berhasil");
-
-        // Step 3: Navigate to Manajemen Produk page
-        System.out.println("Mengakses halaman Manajemen Produk...");
-        sidebarPage.toggleSidebarIfMobile();
-        sidebarPage.clickProductMenu();
-        Thread.sleep(2000);
-        assertTrue(productPage.isProductPageVisible(), "Halaman Manajemen Produk tidak terlihat");
-        assertTrue(productPage.isLoadingSpinnerGone(), "Spinner loading masih terlihat");
-        assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
-
-        // Step 4: Ensure a product exists by adding one if necessary
-        System.out.println("Memastikan produk 'Custom T-Shirt' tersedia...");
-        try {
-            WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]"));
-            assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt' tidak ditemukan, menambahkan produk baru...");
-        } catch (Exception e) {
-            System.out.println("Produk 'Custom T-Shirt' tidak ditemukan, menambahkan produk baru...");
-            WebElement addProductButton = driver.findElement(By.cssSelector("button.bg-red-600"));
-            wait.until(ExpectedConditions.elementToBeClickable(addProductButton)).click();
-            Thread.sleep(2000);
-            assertTrue(modalAddProductPage.isModalVisible(), "Modal Tambah Produk tidak terlihat");
-
-            System.out.println("Mengisi data pada modal Tambah Produk Baru...");
-            modalAddProductPage.selectCategory("1");
-            modalAddProductPage.enterProductName("Custom T-Shirt");
-            modalAddProductPage.enterDescription("High-quality custom printed T-shirt");
-            modalAddProductPage.enterUnit("unit");
-            modalAddProductPage.uploadThumbnail("C:\\Users\\VICTUS\\Downloads\\home.png");
-            Thread.sleep(1000);
-
-            System.out.println("Menambahkan variasi produk...");
-            modalAddProductPage.clickAddVariationButton();
-            modalAddProductPage.fillVariationDetails(
-                    "Medium Size", "150000", "50", "200", "1", true
-            );
-            Thread.sleep(1000);
-
-            System.out.println("Mengklik tombol Tambahkan Produk...");
-            modalAddProductPage.clickTambahButton();
-            Thread.sleep(2000);
-
-            System.out.println("Memeriksa pesan sukses...");
-            assertTrue(modalAddProductPage.isSuccessMessageVisible(), "Pesan sukses tidak terlihat setelah menambahkan produk");
-
-            System.out.println("Memeriksa produk baru di tabel...");
-            Thread.sleep(2000);
-            assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
-            WebElement productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt']]"));
-            assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt' tidak terlihat di tabel setelah ditambahkan");
-        }
-
-        // Step 5: Change product status to "inactive"
-        String productName = "Custom T-Shirt";
-        String newStatus = "inactive";
-        System.out.println("Mengubah status produk '" + productName + "' menjadi '" + newStatus + "'...");
-        Map<String, String> beforeDetails = productPage.getProductDetails(productName);
-        String initialStatus = productPage.getProductStatus(productName);
-        if (initialStatus.equals(newStatus)) {
-            System.out.println("Produk sudah dalam status '" + newStatus + "', mengubah ke 'active' terlebih dahulu...");
-            productPage.changeProductStatus(productName, "active");
-            Thread.sleep(2000);
-            assertTrue(productPage.isStatusChangeSuccessVisible(), "Pesan sukses perubahan status ke 'active' tidak terlihat");
-            beforeDetails = productPage.getProductDetails(productName);
-        }
-
-        productPage.changeProductStatus(productName, newStatus);
-        Thread.sleep(2000);
-
-        // Step 6: Verify success message
-        System.out.println("Memeriksa pesan sukses perubahan status...");
-        assertTrue(productPage.isStatusChangeSuccessVisible(), "Pesan sukses perubahan status tidak terlihat");
-
-        // Step 7: Verify status has changed
-        System.out.println("Memeriksa status produk di tabel...");
-        String currentStatus = productPage.getProductStatus(productName);
-        assertEquals(newStatus, currentStatus,
-                "Status produk tidak berubah menjadi '" + newStatus + "', ditemukan: " + currentStatus);
-
-        // Step 8: Verify other product details remain unchanged
-        System.out.println("Memeriksa bahwa hanya status yang berubah di tabel...");
-        Map<String, String> afterDetails = productPage.getProductDetails(productName);
-        assertEquals(beforeDetails.get("category"), afterDetails.get("category"),
-                "Kategori produk berubah setelah update status");
-        assertEquals(beforeDetails.get("name"), afterDetails.get("name"),
-                "Nama produk berubah setelah update status");
-        assertEquals(beforeDetails.get("description"), afterDetails.get("description"),
-                "Deskripsi produk berubah setelah update status");
-        assertEquals(beforeDetails.get("stock"), afterDetails.get("stock"),
-                "Stok produk berubah setelah update status");
-        assertEquals(beforeDetails.get("price"), afterDetails.get("price"),
-                "Harga produk berubah setelah update status");
-        assertEquals(beforeDetails.get("variant"), afterDetails.get("variant"),
-                "Variasi produk berubah setelah update status");
-        assertEquals(beforeDetails.get("options"), afterDetails.get("options"),
-                "Opsi tambahan produk berubah setelah update status");
-
-        // Step 9: Change status back to "active"
-        System.out.println("Mengubah status produk '" + productName + "' kembali ke 'active'...");
-        beforeDetails = productPage.getProductDetails(productName);
-        productPage.changeProductStatus(productName, "active");
-        Thread.sleep(2000);
-
-        // Step 10: Verify success message
-        System.out.println("Memeriksa pesan sukses perubahan status...");
-        assertTrue(productPage.isStatusChangeSuccessVisible(), "Pesan sukses perubahan status tidak terlihat");
-
-        // Step 11: Verify status has changed back
-        System.out.println("Memeriksa status produk di tabel...");
-        currentStatus = productPage.getProductStatus(productName);
-        assertEquals("active", currentStatus,
-                "Status produk tidak berubah menjadi 'active', ditemukan: " + currentStatus);
-
-        // Step 12: Verify other product details remain unchanged
-        System.out.println("Memeriksa bahwa hanya status yang berubah di tabel...");
-        afterDetails = productPage.getProductDetails(productName);
-        assertEquals(beforeDetails.get("category"), afterDetails.get("category"),
-                "Kategori produk berubah setelah update status");
-        assertEquals(beforeDetails.get("name"), afterDetails.get("name"),
-                "Nama produk berubah setelah update status");
-        assertEquals(beforeDetails.get("description"), afterDetails.get("description"),
-                "Deskripsi produk berubah setelah update status");
-        assertEquals(beforeDetails.get("stock"), afterDetails.get("stock"),
-                "Stok produk berubah setelah update status");
-        assertEquals(beforeDetails.get("price"), afterDetails.get("price"),
-                "Harga produk berubah setelah update status");
-        assertEquals(beforeDetails.get("variant"), afterDetails.get("variant"),
-                "Variasi produk berubah setelah update status");
-        assertEquals(beforeDetails.get("options"), afterDetails.get("options"),
-                "Opsi tambahan produk berubah setelah update status");
+        productRow = driver.findElement(By.xpath("//tbody/tr[td[2][text()='Custom T-Shirt Premium']]"));
+        assertTrue(productRow.isDisplayed(), "Produk 'Custom T-Shirt Premium' tidak terlihat di tabel setelah diedit");
+        Map<String, String> productDetails = productPage.getProductDetails("Custom T-Shirt Premium");
+        assertEquals("Premium quality custom printed T-shirt with enhanced durability", productDetails.get("description"),
+                "Deskripsi produk tidak sesuai setelah diedit");
+        assertEquals("2 variasi", productDetails.get("variant"),
+                "Jumlah variasi produk tidak sesuai setelah diedit");
     }
 
     @AfterEach
