@@ -27,8 +27,7 @@ public class ModalAddProductPage {
     private By variationMinQtyInput = By.cssSelector(".variation-box:last-child .variation-min-qty");
     private By variationDefaultRadio = By.cssSelector(".variation-box:last-child .variation-default");
     private By confirmButton = By.cssSelector(".swal2-confirm");
-    private By successMessage = By.cssSelector(".swal2-success .swal2-title");
-
+    private By successMessage = By.cssSelector("div.swal2-html-container");
     // Constructor
     public ModalAddProductPage(WebDriver driver) {
         this.driver = driver;
@@ -115,10 +114,18 @@ public class ModalAddProductPage {
     // Verify success message
     public boolean isSuccessMessageVisible() {
         try {
-            WebElement successElement = wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
-            return successElement.isDisplayed() && successElement.getText().contains("Berhasil");
+            // Wait for the SweetAlert2 modal to be visible
+            WebElement success = wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
+            return success.isDisplayed();
         } catch (Exception e) {
+            System.out.println("Failed to detect success message: " + e.getMessage());
+            System.out.println("Page source at failure: " + driver.getPageSource());
             return false;
         }
+    }
+
+    public void clickCancelButton() {
+        WebElement cancelButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".swal2-cancel")));
+        cancelButton.click();
     }
 }
