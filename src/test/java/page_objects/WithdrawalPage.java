@@ -1,5 +1,6 @@
 package page_objects;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -28,6 +29,7 @@ public class WithdrawalPage {
     private By statusFilter = By.cssSelector("select");
     private By tableRows = By.cssSelector("table tbody tr");
     private By errorMessageLocator = By.xpath("//div[contains(@class, 'bg-red-100')]");
+    private By validationMessageLocator = By.cssSelector("div.swal2-validation-message"); // Lokator baru untuk pesan error modal
 
     // Konstruktor
     public WithdrawalPage(WebDriver driver) {
@@ -54,7 +56,7 @@ public class WithdrawalPage {
             button.click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(withdrawalModal));
             System.out.println("Tombol Tarik Dana berhasil diklik.");
-            Thread.sleep(1000); // Penundaan untuk melihat modal muncul
+            Thread.sleep(1000);
         } catch (Exception e) {
             System.out.println("Gagal mengklik tombol Tarik Dana: " + e.getMessage());
             throw e;
@@ -82,7 +84,7 @@ public class WithdrawalPage {
         }
     }
 
-    // Ambil pesan error
+    // Ambil pesan error pada halaman
     public boolean isErrorMessageVisible() {
         try {
             WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
@@ -93,12 +95,25 @@ public class WithdrawalPage {
         }
     }
 
+    // Ambil pesan validasi pada modal
+    public boolean isValidationMessageVisible(String expectedMessage) {
+        try {
+            WebElement validationMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(validationMessageLocator));
+            String actualMessage = validationMessage.getText();
+            System.out.println("Pesan validasi ditemukan: " + actualMessage);
+            return validationMessage.isDisplayed() && actualMessage.contains(expectedMessage);
+        } catch (Exception e) {
+            System.out.println("Gagal memeriksa pesan validasi: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Metode untuk simulasi slow typing
     private void slowType(WebElement element, String text) throws InterruptedException {
         element.clear();
         for (char c : text.toCharArray()) {
             element.sendKeys(String.valueOf(c));
-            Thread.sleep(100); // Penundaan 100ms per karakter
+            Thread.sleep(100);
         }
     }
 
@@ -109,29 +124,29 @@ public class WithdrawalPage {
             WebElement addButton = wait.until(ExpectedConditions.elementToBeClickable(addAccountButton));
             addButton.click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bankAccountForm")));
-            Thread.sleep(1000); // Penundaan untuk melihat form muncul
+            Thread.sleep(1000);
 
             System.out.println("Memilih bank: " + bankName);
             Select bankDropdown = new Select(wait.until(ExpectedConditions.visibilityOfElementLocated(newBankSelect)));
             bankDropdown.selectByVisibleText(bankName);
-            Thread.sleep(500); // Penundaan untuk melihat dropdown berubah
+            Thread.sleep(500);
 
             System.out.println("Mengisi nomor rekening: " + accountNumber);
             WebElement accountNumberField = driver.findElement(newAccountNumber);
             slowType(accountNumberField, accountNumber);
-            Thread.sleep(500); // Penundaan setelah selesai mengetik
+            Thread.sleep(500);
 
             System.out.println("Mengisi nama pemilik rekening: " + accountName);
             WebElement accountNameField = driver.findElement(newAccountName);
             slowType(accountNameField, accountName);
-            Thread.sleep(500); // Penundaan setelah selesai mengetik
+            Thread.sleep(500);
 
             System.out.println("Menyimpan rekening baru...");
             WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(saveAccountButton));
             saveButton.click();
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("bankAccountForm")));
             wait.until(ExpectedConditions.visibilityOfElementLocated(accountSelect));
-            Thread.sleep(1000); // Penundaan untuk melihat kembali ke form penarikan
+            Thread.sleep(1000);
         } catch (Exception e) {
             System.out.println("Gagal menambahkan rekening baru: " + e.getMessage());
             throw e;
@@ -144,18 +159,32 @@ public class WithdrawalPage {
             System.out.println("Memilih rekening tujuan: " + accountOption);
             Select accountDropdown = new Select(wait.until(ExpectedConditions.visibilityOfElementLocated(accountSelect)));
             accountDropdown.selectByVisibleText(accountOption);
-            Thread.sleep(500); // Penundaan untuk melihat dropdown berubah
+            Thread.sleep(500);
 
             System.out.println("Mengisi jumlah penarikan: " + amount);
             WebElement amountField = wait.until(ExpectedConditions.visibilityOfElementLocated(amountInput));
             slowType(amountField, amount);
-            Thread.sleep(500); // Penundaan setelah selesai mengetik
+            Thread.sleep(500);
 
             System.out.println("Mengklik tombol Ajukan Penarikan...");
             WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(submitWithdrawalButton));
             submitButton.click();
+
+            // Cek apakah pesan validasi muncul
+            try {
+                WebElement validationMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(validationMessageLocator));
+                if (validationMessage.isDisplayed()) {
+                    System.out.println("Pesan validasi ditemukan: " + validationMessage.getText());
+                    Thread.sleep(1000); // Tunggu sebentar untuk stabilitas
+                    return; // Biarkan modal terbuka untuk validasi di WithdrawalSteps
+                }
+            } catch (Exception e) {
+                System.out.println("Tidak ada pesan validasi, lanjutkan...");
+            }
+
+            // Jika tidak ada pesan validasi, tunggu modal hilang
             wait.until(ExpectedConditions.invisibilityOfElementLocated(withdrawalModal));
-            Thread.sleep(1000); // Penundaan untuk melihat hasil pengajuan
+            Thread.sleep(1000);
         } catch (Exception e) {
             System.out.println("Gagal mengajukan penarikan: " + e.getMessage());
             throw e;
@@ -172,5 +201,4 @@ public class WithdrawalPage {
             System.out.println("Gagal menutup modal: " + e.getMessage());
         }
     }
-
 }

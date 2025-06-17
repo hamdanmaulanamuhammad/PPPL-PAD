@@ -54,17 +54,6 @@ public class DashboardSteps {
         Assert.assertTrue("Sidebar tidak terlihat setelah login berhasil", sidebarPage.isSidebarVisible());
     }
 
-    @Then("Seller berhasil masuk ke halaman dashboard")
-    public void sellerSuccessfullyOnDashboard() {
-        if (sidebarPage.isSidebarVisible()) {
-            sidebarPage.toggleSidebarIfMobile();
-            sidebarPage.dismissOverlayIfPresent();
-            Assert.assertTrue("Sidebar tidak terlihat setelah login berhasil", sidebarPage.isSidebarVisible());
-        } else {
-            System.out.println("Sidebar tidak tersedia di halaman ini.");
-        }
-    }
-
     @When("Seller mengakses halaman dashboard")
     public void sellerAccessesDashboardPage() {
         System.out.println("Mengakses halaman dashboard...");

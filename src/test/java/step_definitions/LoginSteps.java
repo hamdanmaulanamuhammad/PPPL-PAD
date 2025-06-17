@@ -77,7 +77,11 @@ public class LoginSteps {
 
     @Then("Seller masuk ke halaman dashboard")
     public void sellerOnDashboard() {
+        // Kosong karena dicek di CommonSteps
+    }
 
+    public WebDriver getDriver() {
+        return driver;
     }
 
     @After

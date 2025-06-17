@@ -25,24 +25,6 @@ public class SellerFlowTest {
     private EtalasePage etalasePage;
     private ReportPage reportPage;
     private ProductPage productPage;
-    private ModalAddProductPage modalAddProductPage;
-
-    @BeforeEach
-    public void setUp() throws InterruptedException {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        loginPage = new LoginPage(driver);
-        sidebarPage = new SidebarPage(driver);
-        dashboardPage = new DashboardPage(driver);
-        withdrawalPage = new WithdrawalPage(driver);
-        etalasePage = new EtalasePage(driver);
-        reportPage = new ReportPage(driver);
-        productPage = new ProductPage(driver);
-        modalAddProductPage = new ModalAddProductPage(driver);
-        driver.get("http://localhost:5173/login");
-    }
-
     @Test
     public void testSellerFlow() throws Exception {
         // Langkah 1: Verifikasi halaman login terlihat
@@ -181,6 +163,24 @@ public class SellerFlowTest {
         System.out.println("Memeriksa produk baru di tabel...");
         Thread.sleep(2000);
         assertTrue(productPage.isProductTableVisible(), "Tabel produk tidak terlihat");
+    }
+
+    private ModalAddProductPage modalAddProductPage;
+
+    @BeforeEach
+    public void setUp() throws InterruptedException {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        loginPage = new LoginPage(driver);
+        sidebarPage = new SidebarPage(driver);
+        dashboardPage = new DashboardPage(driver);
+        withdrawalPage = new WithdrawalPage(driver);
+        etalasePage = new EtalasePage(driver);
+        reportPage = new ReportPage(driver);
+        productPage = new ProductPage(driver);
+        modalAddProductPage = new ModalAddProductPage(driver);
+        driver.get("http://localhost:5173/login");
     }
 
     @Test
